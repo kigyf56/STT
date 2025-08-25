@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Полярная карта неба</title>
-  <script src="virtualsky.js"></script>
+  <script src="https://slowe.github.io/VirtualSky/virtualsky.js"></script>
   <style>
     body { font-family: sans-serif; text-align: center; background: #000; color: #fff; }
     #controls { margin: 20px; }
@@ -21,7 +21,7 @@
     <button onclick="updateSky()">Обновить карту</button>
   </div>
 
-  <div id="starmap" style="width: 100%; height: 600px;"></div>
+  <div id="starmap"></div>
 
   <script>
     let sky;
@@ -31,12 +31,10 @@
       const lon = parseFloat(document.getElementById('longitude').value);
       const datetime = document.getElementById('datetime').value;
 
-      // Удаляем старую карту, если есть
       if (sky) {
         document.getElementById('starmap').innerHTML = '';
       }
 
-      // Создаём новую карту
       sky = new VirtualSky({
         id: 'starmap',
         latitude: lat,
@@ -51,9 +49,7 @@
       });
     }
 
-    // Инициализация при загрузке
     window.onload = updateSky;
   </script>
 </body>
 </html>
-
