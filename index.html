@@ -1,75 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VirtualSky Planetarium</title>
-    <script src="lco.virtualsky.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #starmap { width: 600px; height: 600px; border: 1px solid #ccc; }
-        #controls { margin-bottom: 20px; }
-        label { margin-right: 10px; }
-        input { margin-right: 20px; padding: 5px; }
-        button { padding: 5px 10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Полярная карта неба</title>
+  <script src="virtualsky.js"></script>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #000; color: #fff; }
+    #controls { margin: 20px; }
+    input { margin: 5px; padding: 5px; }
+    #starmap { width: 100%; height: 600px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <div id="controls">
-        <label for="latitude">Latitude:</label>
-        <input type="number" id="latitude" value="51.5074" step="0.0001" min="-90" max="90">
-        <label for="longitude">Longitude:</label>
-        <input type="number" id="longitude" value="-0.1278" step="0.0001" min="-180" max="180">
-        <label for="datetime">Date & Time:</label>
-        <input type="datetime-local" id="datetime">
-        <button onclick="updateStarMap()">Update Map</button>
-    </div>
-    <div id="starmap"></div>
+  <h1>Полярная карта звёздного неба</h1>
 
-    <script>
-        // Initialize VirtualSky with default settings
-        let virtualsky = VirtualSky({
-            id: 'starmap',
-            projection: 'polar', // Set polar projection by default
-            latitude: 51.5074,   // Default: London
-            longitude: -0.1278,  // Default: London
-            clock: new Date(),   // Current time
-            showstars: true,
-            showplanets: true,
-            showconstellations: true,
-            showconstellationlabels: true,
-            showgridlines: true
-        });
+  <div id="controls">
+    <label>Широта: <input type="number" id="latitude" value="55.75" step="0.01"></label>
+    <label>Долгота: <input type="number" id="longitude" value="37.62" step="0.01"></label>
+    <label>Дата и время (UTC): <input type="datetime-local" id="datetime" value="2025-08-25T14:04"></label>
+    <button onclick="updateSky()">Обновить карту</button>
+  </div>
 
-        // Function to update the star map based on user input
-        function updateStarMap() {
-            const latitude = parseFloat(document.getElementById('latitude').value);
-            const longitude = parseFloat(document.getElementById('longitude').value);
-            const datetimeInput = document.getElementById('datetime').value;
+  <div id="starmap"></div>
 
-            // Validate inputs
-            if (isNaN(latitude) || latitude < -90 || latitude > 90) {
-                alert('Please enter a valid latitude (-90 to 90).');
-                return;
-            }
-            if (isNaN(longitude) || longitude < -180 || longitude > 180) {
-                alert('Please enter a valid longitude (-180 to 180).');
-                return;
-            }
-            if (!datetimeInput) {
-                alert('Please select a valid date and time.');
-                return;
-            }
+  <script>
+    let sky;
 
-            // Update VirtualSky settings
-            virtualsky.setLatitude(latitude);
-            virtualsky.setLongitude(longitude);
-            virtualsky.setClock(new Date(datetimeInput));
-            virtualsky.draw(); // Redraw the map
-        }
+    function updateSky() {
+      const lat = parseFloat(document.getElementById('latitude').value);
+      const lon = parseFloat(document.getElementById('longitude').value);
+      const datetime = document.getElementById('datetime').value;
 
-        // Set default datetime input to current time
-        document.getElementById('datetime').value = new Date().toISOString().slice(0, 16);
-    </script>
+      // Удаляем старую карту, если есть
+      if (sky) {
+        document.getElementById('starmap').innerHTML = '';
+      }
+
+      // Создаём новую карту
+      sky = new VirtualSky({
+        id: 'starmap',
+        latitude: lat,
+        longitude: lon,
+        projection: 'polar',
+        constellations: true,
+        gridlines_az: true,
+        gridlines_eq: true,
+        planets: true,
+        showdate: datetime,
+        live: false
+      });
+    }
+
+    // Инициализация при загрузке
+    window.onload = updateSky;
+  </script>
 </body>
 </html>
