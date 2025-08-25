@@ -2,18 +2,19 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>карта</title>
-  <link rel="stylesheet" href="VirtualSky/virtualsky.css">
-  <script src="VirtualSky/virtualsky.js"></script>
+  <title>Карта неба</title>
+  <link rel="stylesheet" href="virtualsky.css">
+  <script src="virtualsky.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
-    #starmap { width: 100%; height: 500px; margin: 20px auto; border: 1px solid #ccc; }
-    form { margin-bottom: 20px; }
-    input { margin: 5px; }
+    body { font-family: Arial, sans-serif; margin: 0; text-align: center; }
+    #starmap { width: 100%; height: 80vh; display: block; margin: 0 auto; border: 1px solid #ccc; }
+    form { margin: 20px; }
+    input { margin: 5px; padding: 5px; }
+    button { padding: 5px 10px; }
   </style>
 </head>
 <body>
-  <h1>Карта</h1>
+  <h1>Карта неба</h1>
 
   <form id="settings">
     Широта: <input type="number" id="lat" value="0" step="0.01"><br>
@@ -25,34 +26,44 @@
   <div id="starmap"></div>
 
   <script>
-    // Инициализация VirtualSky
+    // Проверяем, что VirtualSky загружен
+    if (typeof VirtualSky === 'undefined') {
+      alert('virtualsky.js не найден или не загружен!');
+    }
+
+    // Инициализация карты
     const sky = new VirtualSky({
       id: 'starmap',
-      width: 800,
-      height: 500,
+      width: window.innerWidth,
+      height: window.innerHeight * 0.8,
       latitude: 0,
       longitude: 0,
       date: new Date(),
       projection: 'stereo',
-      constellation_labels: true
+      constellation_labels: true,
+      show_planets: true
     });
-
     sky.draw();
 
-    // Обработчик формы
+    // Обновление карты при отправке формы
     document.getElementById('settings').addEventListener('submit', function(e) {
-      e.preventDefault(); // чтобы страница не перезагружалась
-
-      const lat = parseFloat(document.getElementById('lat').value);
-      const lon = parseFloat(document.getElementById('lon').value);
+      e.preventDefault();
+      const lat = parseFloat(document.getElementById('lat').value) || 0;
+      const lon = parseFloat(document.getElementById('lon').value) || 0;
       const dtInput = document.getElementById('datetime').value;
       const dt = dtInput ? new Date(dtInput) : new Date();
 
       sky.latitude = lat;
       sky.longitude = lon;
       sky.date = dt;
+      sky.draw();
+    });
 
-      sky.draw(); // перерисовываем карту
+    // Адаптивная карта при изменении окна
+    window.addEventListener('resize', () => {
+      sky.width = window.innerWidth;
+      sky.height = window.innerHeight * 0.8;
+      sky.draw();
     });
   </script>
 </body>
